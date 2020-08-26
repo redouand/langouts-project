@@ -1,0 +1,26 @@
+{
+  "name": "treffens-server",
+  "version": "1.0.0",
+  "description": "First dream side project for \"Red\", called treffens.com, DATE: 26 Aout 2020.",
+  "main": "server.js",
+  "scripts": {
+    "server": "nodemon server.js",
+    "client": "npm start --prefix client",
+    "both": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "author": "Red Redwan",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.0.0",
+    "chalk": "^4.1.0",
+    "express": "^4.17.1",
+    "express-validator": "^6.6.1",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.9.27",
+    "validator": "^13.1.1"
+  },
+  "devDependencies": {
+    "concurrently": "^5.3.0",
+    "nodemon": "^2.0.4"
+  }
+}

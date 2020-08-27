@@ -23,6 +23,10 @@ const User_schema = new mongoose.Schema({
         type: String,
         minlength: 7
     },
+    avatar: {
+        type: String,
+        default: 'N/A'
+    },
     date: {
         type: Date,
         default: Date.now

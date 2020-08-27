@@ -29,7 +29,7 @@ const User_schema = new mongoose.Schema({
     }
 })
 
-//------------ Pre MiddleWare
+//------------ Pre Mongoose MiddleWare (Hashing Password)
 User_schema.pre('save', async function (next) {
     if (this.isModified('password')) { this.password = await bcrypt.hash(this.password, 8) }
     next()
@@ -41,7 +41,7 @@ User_schema.methods.genToken = async function () {
     return token
 }
 
-//--------Check Credentials
+//--------Check Login
 User_schema.statics.checkLogin = async function (email, password) {
     const user = await this.findOne({ email });
     if (!user) throw new Error('No user by that email.')

@@ -68,11 +68,14 @@ User_Route.patch('/api/edit-account', auth, editValidator, async (req, res) => {
 })
 
 
-//------------Delete Route
+//------------Delete account
 User_Route.delete('/api/delete-account', auth, async (req, res) => {
     const user = req.user
     try {
         const deleted = await UserCon.findByIdAndDelete(user._id);
+
+        TODO:  //deletes the accocieted Audio and profile pic
+
         res.send({ Status: 'Success' })
     }
     catch (error) {
@@ -81,4 +84,18 @@ User_Route.delete('/api/delete-account', auth, async (req, res) => {
 })
 
 
+//------------Get user data (info)
+User_Route.get('/api/get-user-info', auth, async (req, res) => {
+    const id = req.user._id
+    try {
+        const userInfo = await UserCon.findById(id);
+        const returnedUser = await userInfo.importantOnly()
+        res.send(returnedUser)
+    }
+    catch (error) {
+        res.status(500).send({ Error: error.message })
+    }
+})
+
 module.exports = User_Route
+

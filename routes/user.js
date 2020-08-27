@@ -55,13 +55,30 @@ User_Route.patch('/api/edit-account', auth, editValidator, async (req, res) => {
         })
 
         await user.save()
+        //--------return important only
+        const returnedUser = await user.importantOnly()
+
         res.status(201)
-        res.send(user)
+        res.send(returnedUser)
     }
-    catch (err) {
-        const Errors = err.message.split('.,');
+    catch (error) {
+        const Errors = error.message.split('.,');
         res.status(400).send({ Errors })
     }
 })
+
+
+//------------Delete Route
+User_Route.delete('/api/delete-account', auth, async (req, res) => {
+    const user = req.user
+    try {
+        const deleted = await UserCon.findByIdAndDelete(user._id);
+        res.send({ Status: 'Success' })
+    }
+    catch (error) {
+        res.status(500).send({ Error: error.message })
+    }
+})
+
 
 module.exports = User_Route

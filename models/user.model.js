@@ -29,11 +29,11 @@ const User_schema = new mongoose.Schema({
     }
 })
 
-// //----------HASHING PASSWORD (Bcrypt)
-// User_schema.methods.crypting = async function () {
-//     const hashed = await bcrypt.hash(this.password, 8)
-//     this.password = hashed
-// }
+//------------ Pre MiddleWare
+User_schema.pre('save', async function (next) {
+    if (this.isModified('password')) { this.password = await bcrypt.hash(this.password, 8) }
+    next()
+})
 
 //---------Generate Json Web Token (jwt)
 User_schema.methods.genToken = async function () {
@@ -50,11 +50,13 @@ User_schema.statics.checkLogin = async function (email, password) {
     return user
 }
 
-//------------ Pre MiddleWare
-User_schema.pre('save', async function (next) {
-    if (this.isModified('password')) { this.password = await bcrypt.hash(this.password, 8) }
-    next()
-})
+//-------------RETURN IMPORTANT ONLY
+User_schema.methods.importantOnly = function () {
+    const user = this.toObject()
+    delete user.password
+    delete user.__v
+    return user
+}
 
 //-----------EXPORTS
 const UserCon = mongoose.model('user', User_schema)

@@ -7,9 +7,7 @@ const auth = async (req, res, next) => {
         const decoded = jwt.verify(token, 'willieverbuildthissite?')
         const id = decoded._id
         const user = await UserCon.findById(id)
-        // .select('-__v')
-        // .select('-password')
-        // .select('-tokens')
+            .select('-password')
 
         if (!user) {
             throw new Error()

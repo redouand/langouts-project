@@ -13,7 +13,6 @@ User_Route.post('/api/sign-up', signUp_Valid, async (req, res) => {
     try {
         Validation_result(req);
         const user = new UserCon(req.body);
-        await user.crypting();
         const token = await user.genToken();
         await user.save();
         res.send({ Token: token, _id: user._id });
@@ -39,26 +38,30 @@ User_Route.post('/api/login', async (req, res) => {
 })
 
 
-//----------edit Account
+//-------------Edit Account
 User_Route.patch('/api/edit-account', auth, editValidator, async (req, res) => {
-    const user = req.user
     const allowed = ['first', 'second', 'password']
     const desiredProps = Object.keys(req.body);
-    const isValidOperation = desiredProps.every((singleDesired) => allowed.includes(singleDesired));
+    const isValidOperation = desiredProps.every((singleDesired) => allowed.includes(singleDesired))
+    const user = req.user
     try {
         if (!isValidOperation) { throw new Error('Invalid Operation.') }
         Validation_result(req)
-        desiredProps.forEach(singleDesired => user[singleDesired] = req.body[singleDesired])
-        await user.crypting();
+
+        desiredProps.forEach(singleDesired => {
+            if (req.body[singleDesired] !== null) {
+                user[singleDesired] = req.body[singleDesired]
+            }
+        })
+
+        await user.save()
         res.status(201)
         res.send(user)
-        await user.save()
     }
-    catch (error) {
-        const Errors = error.message.split('.,');
+    catch (err) {
+        const Errors = err.message.split('.,');
         res.status(400).send({ Errors })
     }
 })
-
 
 module.exports = User_Route

@@ -6,7 +6,7 @@ const chalk = require('chalk')
 //--------FILES
 const User_Route = require('./routes/user')
 const Profile_set_Route = require('./routes/profile-set');
-const Uploads_Route = require('./routes/uploads-route')
+const Avatar_Route = require('./routes/avatar-route')
 
 //--------MongoDb Connection
 require('./config/db')
@@ -17,7 +17,7 @@ app.use(express.json())
 //--------API ROUTES
 app.use(User_Route)
 app.use(Profile_set_Route)
-app.use(Uploads_Route)
+app.use(Avatar_Route)
 
 
 

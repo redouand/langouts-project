@@ -1,7 +1,7 @@
 //------MODULES
 const multer = require('multer')
 const express = require('express')
-const Uploads_Route = new express.Router();
+const Avatar_Route = new express.Router();
 const path = require('path')
 const sharp = require('sharp')
 const fs = require('fs')
@@ -28,7 +28,7 @@ var upload = multer({
 })
 
 //------UPLOAD IMAGE
-Uploads_Route.post('/api/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
+Avatar_Route.post('/api/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
     const savePath = path.join(__dirname, `../GCP/images/${req.user._id}.jpeg`);
     try {
         const uploaded = await sharp(req.file.path).resize(500, 500).jpeg().toFile(savePath)
@@ -48,7 +48,7 @@ Uploads_Route.post('/api/upload-avatar', auth, upload.single('avatar'), async (r
 
 
 //---------SERVE UPLOADED AVATAR (GET)
-Uploads_Route.get('/users/:id/avatar', async (req, res) => {
+Avatar_Route.get('/users/:id/avatar', async (req, res) => {
     const Path = path.join(__dirname, `../GCP/images/${req.params.id}.jpeg`)
 
     fs.createReadStream(Path)
@@ -63,9 +63,10 @@ Uploads_Route.get('/users/:id/avatar', async (req, res) => {
 
 
 //---------Delete Avatar
-Uploads_Route.post('/api/delete-avatar', auth, async (req, res) => {
+Avatar_Route.post('/api/delete-avatar', auth, async (req, res) => {
     const id = req.user._id
     const Path = path.join(__dirname, `../GCP/images/${id}.jpeg`)
+    //----Delete photo from disk
     await fs.unlink(Path, (err) => {
         if (err) {
             res.set({ 'Content-Type': 'application/json' })
@@ -74,6 +75,7 @@ Uploads_Route.post('/api/delete-avatar', auth, async (req, res) => {
     })
 
     try {
+        //----Set avatar Back to N/A
         const user = await UserCon.findById(id)
         user.avatar = 'N/A'
         await user.save()
@@ -85,4 +87,4 @@ Uploads_Route.post('/api/delete-avatar', auth, async (req, res) => {
     }
 })
 
-module.exports = Uploads_Route
+module.exports = Avatar_Route

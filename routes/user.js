@@ -7,6 +7,7 @@ const UserCon = require('../models/user.model');
 const { signUp_Valid, Validation_result } = require('../utils/validator');
 
 
+//-------Sign up
 User_Route.post('/api/sign-up', signUp_Valid, async (req, res) => {
     try {
         Validation_result(req);
@@ -21,6 +22,21 @@ User_Route.post('/api/sign-up', signUp_Valid, async (req, res) => {
         res.status(400).send({ Errors })
     };
 })
+
+
+
+//----------Log in
+User_Route.post('/api/login', async (req, res) => {
+    try {
+        const user = await UserCon.checkLogin(req.body.email, req.body.password);
+        const token = await user.genToken();
+        res.send({ Token: token, _id: user._id })
+    }
+    catch (error) {
+        res.status(400).send({ Error: error.message })
+    }
+})
+
 
 
 

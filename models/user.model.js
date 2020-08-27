@@ -45,6 +45,15 @@ User_schema.methods.genToken = async function () {
     return token
 }
 
+//--------Check Credentials
+User_schema.statics.checkLogin = async function (email, password) {
+    const user = await this.findOne({ email });
+    if (!user) throw new Error('No user by that email.')
+    const isPass = await bcrypt.compare(password, user.password)
+    if (!isPass) throw new Error('Password incorrect.')
+    return user
+}
+
 
 //-----------EXPORTS
 const UserCon = mongoose.model('user', User_schema)

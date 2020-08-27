@@ -27,6 +27,10 @@ const User_schema = new mongoose.Schema({
         type: String,
         default: 'N/A'
     },
+    audio: {
+        type: String,
+        default: 'N/A'
+    },
     date: {
         type: Date,
         default: Date.now

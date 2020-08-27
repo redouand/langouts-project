@@ -7,6 +7,7 @@ const chalk = require('chalk')
 const User_Route = require('./routes/user')
 const Profile_set_Route = require('./routes/profile-set');
 const Avatar_Route = require('./routes/avatar-route')
+const Audio_Route = require('./routes/audio-route')
 
 //--------MongoDb Connection
 require('./config/db')
@@ -18,6 +19,7 @@ app.use(express.json())
 app.use(User_Route)
 app.use(Profile_set_Route)
 app.use(Avatar_Route)
+app.use(Audio_Route)
 
 
 

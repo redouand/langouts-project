@@ -33,6 +33,28 @@ const signUp_Valid = [
 
 ]
 
+const editValidator = [
+
+    check('first').optional({ nullable: true }).isLength({ min: 3 }).withMessage('Name must be at least 3 letters.')
+        .customSanitizer(value => {
+            if (value) {
+                return value.charAt(0).toUpperCase() + value.slice(1)
+            }
+        }),
+
+
+    check('second').optional({ nullable: true }).isLength({ min: 3 }).withMessage('second name must be at least 3 letters.')
+        .customSanitizer(value => {
+            if (value) {
+                return value.charAt(0).toUpperCase() + value.slice(1)
+            }
+        }),
+
+
+    check('password').optional({ nullable: true }).matches(/^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,16}$/)
+        .withMessage('6-16 letters, 1 number, uppercase and lowercase.'),
+]
+
 const Validation_result = (req) => {
     const errors = validationResult(req)
     if (!errors.isEmpty()) {
@@ -48,5 +70,6 @@ const Validation_result = (req) => {
 
 module.exports = {
     signUp_Valid,
+    editValidator,
     Validation_result
 }

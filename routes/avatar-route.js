@@ -2,9 +2,9 @@
 const multer = require('multer')
 const express = require('express')
 const Avatar_Route = new express.Router();
-const path = require('path')
+const { join } = require('path')
 const sharp = require('sharp')
-const fs = require('fs')
+const { createReadStream, unlink } = require('fs')
 
 //------FILES
 const auth = require('../utils/auth');
@@ -29,11 +29,12 @@ var upload = multer({
 
 //------UPLOAD IMAGE
 Avatar_Route.post('/api/upload-avatar', auth, upload.single('avatar'), async (req, res) => {
-    const savePath = path.join(__dirname, `../GCP/images/${req.user._id}.jpeg`);
+    const savePath = join(__dirname, `../GCP/images/${req.user._id}.jpeg`);
     try {
         const uploaded = await sharp(req.file.path).resize(500, 500).jpeg().toFile(savePath)
         const user = await UserCon.findById(req.user._id)
-        user.avatar = `https://treffens.com/users/${req.user._id}/avatar`
+        // FIXME:  => LINK
+        user.avatar = `http://localhost:8080/users/${req.user._id}/avatar`
         await user.save()
         res.send({ Status: 'success' })
     }
@@ -49,9 +50,9 @@ Avatar_Route.post('/api/upload-avatar', auth, upload.single('avatar'), async (re
 
 //---------SERVE UPLOADED AVATAR (GET)
 Avatar_Route.get('/users/:id/avatar', async (req, res) => {
-    const Path = path.join(__dirname, `../GCP/images/${req.params.id}.jpeg`)
+    const Path = join(__dirname, `../GCP/images/${req.params.id}.jpeg`)
 
-    fs.createReadStream(Path)
+    createReadStream(Path)
         //  =>  listening to error Old School..
         .on("error", (err) => {
             res.set({ 'Content-Type': 'application/json' })
@@ -65,9 +66,9 @@ Avatar_Route.get('/users/:id/avatar', async (req, res) => {
 //---------Delete Avatar
 Avatar_Route.post('/api/delete-avatar', auth, async (req, res) => {
     const id = req.user._id
-    const Path = path.join(__dirname, `../GCP/images/${id}.jpeg`)
+    const Path = join(__dirname, `../GCP/images/${id}.jpeg`)
     //----Delete photo from disk
-    await fs.unlink(Path, (err) => {
+    await unlink(Path, (err) => {
         if (err) {
             res.set({ 'Content-Type': 'application/json' })
             res.status(404).send({ Error: 'Image not found.' })

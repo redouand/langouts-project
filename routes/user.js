@@ -1,6 +1,8 @@
 //------MODULES
 const express = require('express')
 const User_Route = new express.Router();
+const { join } = require('path')
+const { unlink } = require('fs')
 
 //------FILES
 const UserCon = require('../models/user.model');
@@ -70,21 +72,22 @@ User_Route.patch('/api/edit-account', auth, editValidator, async (req, res) => {
 
 //------------Delete account
 User_Route.delete('/api/delete-account', auth, async (req, res) => {
-    const user = req.user
+    const id = req.user._id
     try {
-        const deleted = await UserCon.findByIdAndDelete(user._id);
-
-        TODO:  //deletes the accocieted Audio and profile pic
+        const deleted = await UserCon.findByIdAndDelete(id);
+        if (deleted.avatar !== 'N/A') unlink(join(__dirname, `../GCP/images/${id}.jpeg`), () => null)
+        if (deleted.audio !== 'N/A') unlink(join(__dirname, `../GCP/audio/${id}.mp3`), () => null)
 
         res.send({ Status: 'Success' })
     }
     catch (error) {
+        console.log(err);
         res.status(500).send({ Error: error.message })
     }
 })
 
 
-//------------Get user data (info)
+//------------Get user data (Mine)
 User_Route.get('/api/get-user-info', auth, async (req, res) => {
     const id = req.user._id
     try {
@@ -94,6 +97,20 @@ User_Route.get('/api/get-user-info', auth, async (req, res) => {
     }
     catch (error) {
         res.status(500).send({ Error: error.message })
+    }
+})
+
+///-----------Get Any user Data
+User_Route.get('/api/users/:id', async (req, res) => {
+    const id = req.params.id
+    try {
+        const user = await UserCon.findById(id)
+        const returnedUser = user.importantOnly()
+        delete returnedUser.email
+        res.send(returnedUser)
+    }
+    catch (err) {
+        res.status(404).send({ Error: 'User not found.' })
     }
 })
 

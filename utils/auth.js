@@ -3,7 +3,8 @@ const jwt = require('jsonwebtoken')
 
 const auth = async (req, res, next) => {
     try {
-        const token = req.header('X-Auth-Token')
+        // TODO:  => Will be Changed back to X-Auth-Token. 
+        const token = req.header('Authorization').replace('Bearer ', '')
         const decoded = jwt.verify(token, 'willieverbuildthissite?')
         const id = decoded._id
         const user = await UserCon.findById(id)

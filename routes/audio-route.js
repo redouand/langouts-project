@@ -2,7 +2,7 @@
 const express = require('express')
 const Audio_Route = new express.Router();
 const multer = require('multer')
-const path = require('path')
+const { join } = require('path')
 const { createReadStream, unlink } = require('fs')
 
 //-------FILES
@@ -14,7 +14,7 @@ const UserCon = require('../models/user.model');
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
-            cb(null, path.join(__dirname, '../GCP/audio'))
+            cb(null, join(__dirname, '../GCP/audio'))
         },
         filename: function (req, file, cb) {
             cb(null, file.originalname)
@@ -27,7 +27,8 @@ Audio_Route.post('/api/upload-spoken-bio', auth, upload.single('voice'), async (
     const id = req.user._id
     try {
         const user = await UserCon.findById(id)
-        user.audio = `https://treffens.com/users/${id}/spoken-bio`
+        // FIXME:  => LINK
+        user.audio = `http://localhost:8080/users/${id}/spoken-bio`
         await user.save()
         res.send({ Status: 'success' })
     }
@@ -39,7 +40,7 @@ Audio_Route.post('/api/upload-spoken-bio', auth, upload.single('voice'), async (
 
 //--------Retrieve Audio through LINK
 Audio_Route.get('/users/:id/spoken-bio', async (req, res) => {
-    const audioPath = path.join(__dirname, `../GCP/audio/${req.params.id}.mp3`)
+    const audioPath = join(__dirname, `../GCP/audio/${req.params.id}.mp3`)
     res.writeHead(200, { 'Content-Type': 'audio/mp3' })
     createReadStream(audioPath).pipe(res)
 })
@@ -50,7 +51,7 @@ Audio_Route.get('/users/:id/spoken-bio', async (req, res) => {
 //---------Delete Avatar
 Audio_Route.post('/api/delete-spoken-bio', auth, async (req, res) => {
     const id = req.user._id
-    const Path = path.join(__dirname, `../GCP/audio/${id}.mp3`)
+    const Path = join(__dirname, `../GCP/audio/${id}.mp3`)
     //----Delete audio from disk
     await unlink(Path, (err) => {
         if (err) {
